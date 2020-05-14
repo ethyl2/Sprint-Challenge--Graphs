@@ -133,7 +133,7 @@ def create_traversal_path():
             stack.append(move)
         elif len(visited_rooms) == len(room_graph):
             # print("Traversal_path is made! " + str(traversal_path))
-            return [traversal_path, graph]
+            return traversal_path
         else:
             # Back up to nearest room with an unexplored direction
             next_step = find_nearest_unexplored_room(
@@ -181,9 +181,9 @@ visited_rooms.add(player.current_room)
 # traversal_path = ['n', 'n']
 
 candidate = create_traversal_path()
-while len(candidate[0]) > 965:  # 959 for stretch
+while len(candidate) > 959:  # 959 for stretch
     candidate = create_traversal_path()
-traversal_path = candidate[0]
+traversal_path = candidate
 
 # Test, where player travels through traversal_path.
 for move in traversal_path:
