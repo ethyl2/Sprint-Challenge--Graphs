@@ -54,8 +54,23 @@ def bfs(graph, starting_vertex):
 
 
 def find_nearest_unvisited(graph, current_room, visited_rooms):
-    path = mod_bfs(graph, current_room, visited_rooms)
-    print(path)
+    unexplored_room_path = mod_bfs(graph, current_room, visited_rooms)
+    # print(path)
+    path = []
+
+    for i in range(0, len(unexplored_room_path) - 1):
+        # print("Graph at room " +
+        #       str(unexplored_room_path[i]) + ": " + str(graph[unexplored_room_path[i]]))
+        graph_list = list(
+            graph[unexplored_room_path[i]].items())
+        direction = ''
+        for entry in graph_list:
+            if entry[1] == unexplored_room_path[i + 1]:
+                direction = entry[0]
+                # print("Direction found: " + str(direction))
+        path.append(direction)
+    # print(str(path))
+    return(path)
 
 
 def mod_bfs(graph, starting_vertex, visited_rooms):
@@ -210,21 +225,21 @@ def create_traversal_path2(graph):
     unexplored_directions = [entry[0] for entry in list(
         graph[player.current_room.id].items()) if entry[0] not in visited_rooms]
     # print(unexplored_directions)
-    stack.append('n')
-    traversal_path.append('n')
+    stack.append('w')
+    traversal_path.append('w')
     while len(visited_rooms) < len(room_graph):
         move = stack.pop()
         # Travel that direction
         player.travel(move)
-        print("In room " + str(player.current_room.id))
+        # print("In room " + str(player.current_room.id))
 
         # Log that direction
         traversal_path.append(move)
-        print("Current traversal_path: " + str(traversal_path))
+        # print("Current traversal_path: " + str(traversal_path))
         # Add current_room to visited_rooms
         visited_rooms.add(player.current_room)
         visited_room_ids.add(player.current_room.id)
-        print("now num visited rooms is " + str(len(visited_rooms)))
+        # print("now num visited rooms is " + str(len(visited_rooms)))
 
         current_exits = player.current_room.get_exits()
         # unexplored_directions = [entry[0] for entry in list(
@@ -233,25 +248,37 @@ def create_traversal_path2(graph):
         for room in list(graph[player.current_room.id].items()):
             if room[1] not in visited_room_ids:
                 unexplored_directions.append(room[0])
-        print("unexplored directions: " + str(unexplored_directions))
+        # print("unexplored directions: " + str(unexplored_directions))
         if len(unexplored_directions) > 0:
-            if move in unexplored_directions:  # 'w'
-                move = move
-            elif 'w' in unexplored_directions:
-                move = 'w'                    # move = 'w'
-            else:
-                move = unexplored_directions[random.randint(
-                    0, len(unexplored_directions) - 1)]
+            # if move in unexplored_directions:  # 'w'
+            #     move = move
+            # if 'w' in unexplored_directions:
+            #     move = 'w'                    # move = 'w'
+            # else:
+            move = unexplored_directions[random.randint(
+                0, len(unexplored_directions) - 1)]
             stack.append(move)
         elif len(visited_rooms) == len(room_graph):
-            print("Traversal_path is made! " + str(traversal_path))
-            return traversal_path
+            print("Traversal_path is made! " + str(traversal_path[1:]))
+            return traversal_path[1:]
         else:
             # back up to get to nearest unvisited room
-            path = find_nearest_unvisited(
+            next_step = find_nearest_unvisited(
                 graph, player.current_room.id, visited_room_ids)
-            print("at dead end")
-            return
+            # print("at dead end")
+            # return
+            for i in range(0, len(next_step) - 1):
+                player.travel(next_step[i])
+                # print("In room " + str(player.current_room.id))
+
+                # Log that direction
+                traversal_path.append(next_step[i])
+
+                # Add current_room to visited_rooms
+                visited_rooms.add(player.current_room)
+                visited_room_ids.add(player.current_room.id)
+            stack.append(next_step[-1])
+
     print("returning from 2nd funct: " + str(traversal_path))
     return traversal_path
 
@@ -287,9 +314,18 @@ visited_rooms.add(player.current_room)
 
 # Fill this out with directions to walk
 # traversal_path = ['n', 'n']
-answers = create_traversal_path()
-traversal_path = answers[0]
-
+candidate = create_traversal_path()
+while len(candidate[0]) > 959:
+    candidate = create_traversal_path()
+traversal_path = candidate[0]
+'''
+path2 = create_traversal_path2(answers[1])
+while len(path2) > 972:
+    path2 = create_traversal_path2(answers[1])
+'''
+# traversal_path = answers[0]
+# print("len of path: " + str(len(path2)))
+# traversal_path = path2
 # Test, where player travels through traversal_path.
 for move in traversal_path:
     player.travel(move)
@@ -302,8 +338,8 @@ else:
     print("TESTS FAILED: INCOMPLETE TRAVERSAL")
     print(f"{len(room_graph) - len(visited_rooms)} unvisited rooms")
 
-# create_traversal_path2(answers[1])
-
+# path2 = create_traversal_path2(answers[1])
+# print(len(path2))
 #######
 # UNCOMMENT TO WALK AROUND
 #######
