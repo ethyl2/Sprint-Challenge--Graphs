@@ -11,8 +11,6 @@ from ast import literal_eval
 def find_nearest_unexplored_room(graph, current_room):
     # print("Current_room in fnur: " + str(current_room))
     unexplored_room_path = bfs(graph, current_room)
-    # use below if you want to use dfs instead:
-    # unexplored_room_path = dfs(graph, current_room)
 
     # Now convert it to directions
     # print(unexplored_room_path)
@@ -48,26 +46,6 @@ def bfs(graph, starting_vertex):
                 new_path = list(current_path)
                 new_path.append(neighbor)
                 queue.enqueue(new_path)
-                if neighbor == '?':
-                    return new_path
-            visited_vertices.add(current_vertex)
-
-
-def dfs(graph, starting_vertex):
-    visited_vertices = set()
-    stack = Stack()
-    stack.push([starting_vertex])
-    while stack.size() > 0:
-        current_path = stack.pop()
-
-        current_vertex = current_path[-1]
-        # print("current_vertex " + str(current_vertex))
-        if current_vertex not in visited_vertices:
-            neighbors = get_neighbors(graph, current_vertex)
-            for neighbor in neighbors:
-                new_path = list(current_path)
-                new_path.append(neighbor)
-                stack.push(new_path)
                 if neighbor == '?':
                     return new_path
             visited_vertices.add(current_vertex)
@@ -185,9 +163,6 @@ world = World()
 map_file = "maps/main_maze.txt"
 
 # Loads the map into a dictionary
-"""
-room_graph=literal_eval(open(map_file, "r").read())
-"""
 with open(os.path.join(sys.path[0], map_file), 'r') as f:
     room_graph = literal_eval(f.read())
 world.load_graph(room_graph)
