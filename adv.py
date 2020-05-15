@@ -125,6 +125,14 @@ def create_traversal_path():
             # To See if having a default direction decreases the traveral_path length
             if 'w' in unexplored_directions:
                 move = 'w'
+                '''
+                elif 'n' in unexplored_directions:
+                    move = 'n'
+                elif 'e' in unexplored_directions:
+                    move = 'e'
+                elif 's' in unexplored_directions:
+                    move = 's'
+                '''
             else:
                 move = unexplored_directions[random.randint(
                     0, len(unexplored_directions) - 1)]
@@ -181,7 +189,7 @@ visited_rooms.add(player.current_room)
 # traversal_path = ['n', 'n']
 
 candidate = create_traversal_path()
-while len(candidate) > 959:  # 959 for stretch
+while len(candidate) > 980:  # 959 for stretch
     candidate = create_traversal_path()
 traversal_path = candidate
 
