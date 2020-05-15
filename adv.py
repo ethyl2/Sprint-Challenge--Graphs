@@ -56,6 +56,11 @@ def get_neighbors(graph, room):
     return list(graph[room].values())
 
 
+def save_path(traversal_path):
+    with open(os.path.join(sys.path[0], 'path.txt'), 'w') as f:
+        f.write(str(traversal_path))
+
+
 def create_traversal_path():
     visited_rooms = set()
     player = Player(world.starting_room)
@@ -189,9 +194,11 @@ visited_rooms.add(player.current_room)
 # traversal_path = ['n', 'n']
 
 candidate = create_traversal_path()
-while len(candidate) > 980:  # 959 for stretch
+while len(candidate) > 959:  # 959 for stretch
     candidate = create_traversal_path()
 traversal_path = candidate
+save_path(traversal_path)
+
 
 # Test, where player travels through traversal_path.
 for move in traversal_path:
