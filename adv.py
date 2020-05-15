@@ -193,29 +193,41 @@ visited_rooms.add(player.current_room)
 # Fill this out with directions to walk
 # traversal_path = ['n', 'n']
 
-candidate = create_traversal_path()
-while len(candidate) > 959:  # 959 for stretch
+
+def create_path_to_save():
     candidate = create_traversal_path()
-traversal_path = candidate
-save_path(traversal_path)
+    while len(candidate) > 959:  # 959 for stretch
+        candidate = create_traversal_path()
+    traversal_path = candidate
+    save_path(traversal_path)
 
 
-# Test, where player travels through traversal_path.
-for move in traversal_path:
-    player.travel(move)
-    visited_rooms.add(player.current_room)
+def move_player_through_path():
 
-if len(visited_rooms) == len(room_graph):
-    print(
-        f"TESTS PASSED: {len(traversal_path)} moves, {len(visited_rooms)} rooms visited")
-else:
-    print("TESTS FAILED: INCOMPLETE TRAVERSAL")
-    print(f"{len(room_graph) - len(visited_rooms)} unvisited rooms")
+    # Test, where player travels through traversal_path.
 
+    with open(os.path.join(sys.path[0], 'path.txt'), 'r') as f:
+        traversal_path = literal_eval(f.read())
+
+    for move in traversal_path:
+        player.travel(move)
+        visited_rooms.add(player.current_room)
+
+    if len(visited_rooms) == len(room_graph):
+        print(
+            f"TESTS PASSED: {len(traversal_path)} moves, {len(visited_rooms)} rooms visited")
+    else:
+        print("TESTS FAILED: INCOMPLETE TRAVERSAL")
+        print(f"{len(room_graph) - len(visited_rooms)} unvisited rooms")
+
+
+# create_path_to_save()
+move_player_through_path()
 #######
 # UNCOMMENT TO WALK AROUND
 #######
 # player.current_room.print_room_description(player)
+
 
 '''
 while True:
