@@ -11,6 +11,8 @@ from ast import literal_eval
 def find_nearest_unexplored_room(graph, current_room):
     # print("Current_room in fnur: " + str(current_room))
     unexplored_room_path = bfs(graph, current_room)
+    # use below if you want to use dfs instead:
+    # unexplored_room_path = dfs(graph, current_room)
 
     # Now convert it to directions
     # print(unexplored_room_path)
@@ -51,14 +53,29 @@ def bfs(graph, starting_vertex):
             visited_vertices.add(current_vertex)
 
 
+def dfs(graph, starting_vertex):
+    visited_vertices = set()
+    stack = Stack()
+    stack.push([starting_vertex])
+    while stack.size() > 0:
+        current_path = stack.pop()
+
+        current_vertex = current_path[-1]
+        # print("current_vertex " + str(current_vertex))
+        if current_vertex not in visited_vertices:
+            neighbors = get_neighbors(graph, current_vertex)
+            for neighbor in neighbors:
+                new_path = list(current_path)
+                new_path.append(neighbor)
+                stack.push(new_path)
+                if neighbor == '?':
+                    return new_path
+            visited_vertices.add(current_vertex)
+
+
 def get_neighbors(graph, room):
     # Gets the room IDs of neighbors, or '?'
     return list(graph[room].values())
-
-
-def save_path(traversal_path):
-    with open(os.path.join(sys.path[0], 'path.txt'), 'w') as f:
-        f.write(str(traversal_path))
 
 
 def create_traversal_path():
@@ -130,14 +147,6 @@ def create_traversal_path():
             # To See if having a default direction decreases the traveral_path length
             if 'w' in unexplored_directions:
                 move = 'w'
-                '''
-                elif 'n' in unexplored_directions:
-                    move = 'n'
-                elif 'e' in unexplored_directions:
-                    move = 'e'
-                elif 's' in unexplored_directions:
-                    move = 's'
-                '''
             else:
                 move = unexplored_directions[random.randint(
                     0, len(unexplored_directions) - 1)]
@@ -163,8 +172,9 @@ def create_traversal_path():
                 visited_rooms.add(player.current_room)
             stack.append(next_step[-1])
 
-
 # Load world and have player traverse it
+
+
 # Load world
 world = World()
 
@@ -176,6 +186,9 @@ world = World()
 map_file = "maps/main_maze.txt"
 
 # Loads the map into a dictionary
+"""
+room_graph=literal_eval(open(map_file, "r").read())
+"""
 with open(os.path.join(sys.path[0], map_file), 'r') as f:
     room_graph = literal_eval(f.read())
 world.load_graph(room_graph)
@@ -192,42 +205,25 @@ visited_rooms.add(player.current_room)
 
 # Fill this out with directions to walk
 # traversal_path = ['n', 'n']
+traversal_path = create_traversal_path()
+
+# Test, where player travels through traversal_path.
+for move in traversal_path:
+    player.travel(move)
+    visited_rooms.add(player.current_room)
+
+if len(visited_rooms) == len(room_graph):
+    print(
+        f"TESTS PASSED: {len(traversal_path)} moves, {len(visited_rooms)} rooms visited")
+else:
+    print("TESTS FAILED: INCOMPLETE TRAVERSAL")
+    print(f"{len(room_graph) - len(visited_rooms)} unvisited rooms")
 
 
-def create_path_to_save():
-    candidate = create_traversal_path()
-    while len(candidate) > 959:  # 959 for stretch
-        candidate = create_traversal_path()
-    traversal_path = candidate
-    save_path(traversal_path)
-
-
-def move_player_through_path():
-
-    # Test, where player travels through traversal_path.
-
-    with open(os.path.join(sys.path[0], 'path.txt'), 'r') as f:
-        traversal_path = literal_eval(f.read())
-
-    for move in traversal_path:
-        player.travel(move)
-        visited_rooms.add(player.current_room)
-
-    if len(visited_rooms) == len(room_graph):
-        print(
-            f"TESTS PASSED: {len(traversal_path)} moves, {len(visited_rooms)} rooms visited")
-    else:
-        print("TESTS FAILED: INCOMPLETE TRAVERSAL")
-        print(f"{len(room_graph) - len(visited_rooms)} unvisited rooms")
-
-
-# create_path_to_save()
-move_player_through_path()
 #######
 # UNCOMMENT TO WALK AROUND
 #######
 # player.current_room.print_room_description(player)
-
 
 '''
 while True:
